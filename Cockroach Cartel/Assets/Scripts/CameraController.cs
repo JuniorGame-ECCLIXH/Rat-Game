@@ -5,13 +5,21 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     //setup
-    public Transform target;
+    public Transform _target;
     [SerializeField] private Vector3 direction;
     [SerializeField] private float distance;
     //cam movment
     [SerializeField] private float angle;
     private float holdAngle;
-    private float angleShift = 3;
+    [SerializeField] private float angleShift = 3;
+
+    private void Start()
+    {
+        if(_target == null)
+        {
+            _target = GameObject.FindGameObjectWithTag("Player").transform;
+        }
+    }
 
     void Update()
     {
@@ -28,13 +36,16 @@ public class CameraController : MonoBehaviour
         }
 
         //set position of cam
-        this.transform.position = target.position + (direction.normalized * distance);
+        this.transform.position = _target.position + (direction.normalized * distance);
 
         //set cam target and look at, edit Y by mouse
-        Vector3 tempTarget = target.position;
+        Vector3 tempTarget = _target.position;
         if (Input.GetAxis("Mouse Y") > 0)
         {
-            holdAngle += angleShift/50;
+            if(holdAngle <= 3)
+            {
+                holdAngle += angleShift/50;
+            }
         }
         else if (Input.GetAxis("Mouse Y") < 0)
         {
