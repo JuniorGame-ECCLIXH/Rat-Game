@@ -3,20 +3,19 @@ using UnityEngine;
 public class HiddenObject : MonoBehaviour
 {
     // Define the layer index to set when in the trigger
-    [SerializeField] private int newLayerIndex;
+    [SerializeField] private LayerMask newLayer;
 
     // Store the original layer index before changing it
-    [SerializeField] private int originalLayerIndex;
+    [SerializeField] private LayerMask playerLayer;
 
     private void OnTriggerEnter(Collider other)
     {
         // Check if the entering object is the player or any other relevant object
         if (other.CompareTag("Player"))
         {
-            //Stores the original layer index of the player
-            originalLayerIndex = other.gameObject.layer;
             // Change the layer index to the newLayerIndex
-            ChangeLayer(newLayerIndex, other.gameObject);
+            int layerIndex = (int)Mathf.Log(newLayer.value, 2);
+            ChangeLayer(layerIndex, other.gameObject);
         }
     }
 
@@ -26,7 +25,8 @@ public class HiddenObject : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             // Revert the layer index to the originalLayerIndex
-            ChangeLayer(originalLayerIndex, other.gameObject);
+            int layerIndex = (int)Mathf.Log(playerLayer.value, 2);
+            ChangeLayer(layerIndex, other.gameObject);
         }
     }
 

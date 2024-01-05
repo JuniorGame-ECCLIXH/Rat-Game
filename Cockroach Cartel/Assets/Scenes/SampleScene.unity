@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.3565621, g: 0.35806823, b: 0.32639918, a: 1}
+  m_IndirectSpecularColor: {r: 0.35597467, g: 0.35727754, b: 0.3253039, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -346,7 +346,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36be4045f57e077418b1a5c87a405eb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newLayerIndex: 8
+  newLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &484697534
 GameObject:
   m_ObjectHideFlags: 0
@@ -913,7 +918,7 @@ Transform:
   m_GameObject: {fileID: 1960430159}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.95653516, z: -0, w: 0.29161718}
-  m_LocalPosition: {x: 4.07, y: 4.15, z: 6.99}
+  m_LocalPosition: {x: 4.07, y: 1.54, z: 6.99}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -958,20 +963,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a228988b8df988447b5651247d7da1d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fovRadius: 10
-  fovAngle: 90
-  player: {fileID: 722209248}
+  FOVRadius: 7.1
+  FOVAngle: 52
+  Player: {fileID: 0}
   targetMask:
     serializedVersion: 2
     m_Bits: 128
   obstructionMask:
     serializedVersion: 2
     m_Bits: 256
-  canSeePlayer: 0
-  alertRadius: 15
+  CanSeePlayer: 0
+  alertRadius: 8.23
   enemyMask:
     serializedVersion: 2
     m_Bits: 512
+  drawGizmos: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

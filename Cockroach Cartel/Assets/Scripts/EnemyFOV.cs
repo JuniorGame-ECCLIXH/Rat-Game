@@ -1,34 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class EnemyFOV : MonoBehaviour
 {
     [Header("FOV")]
-    public float fovRadius;
-
-    [Range(0, 360)]
-    public float fovAngle;
-
-    public GameObject player;
+    [SerializeField] private float FOVRadius;
+    [Range(0, 360)] [SerializeField] private float FOVAngle;
+    private GameObject player;
 
     [SerializeField] private LayerMask targetMask;
     [SerializeField] private LayerMask obstructionMask;
-
-    public bool canSeePlayer;
+    private bool canSeePlayer;
 
     [Header("Alerted")]
-
     [SerializeField] private float alertRadius;
-
     [SerializeField] private LayerMask enemyMask;
+
+    [Header("Editor Visuals")]
+    [SerializeField] private bool drawGizmos = true;
 
     private void Start()
     {
         //Initializes the detection coroutine
         StartCoroutine(FOVRoutine());
     }
+
+    public bool CanSeePlayer() => canSeePlayer;
+    public GameObject GetPlayer() => player;
 
     private IEnumerator FOVRoutine()
     {
@@ -47,8 +48,7 @@ public class EnemyFOV : MonoBehaviour
     private void CheckFOV()
     {
         //Populates an array with colliders that are detected by a overlap sphere
-        Collider[] rangeCheck = Physics.OverlapSphere(transform.position, fovRadius, targetMask);
-        
+        Collider[] rangeCheck = Physics.OverlapSphere(transform.position, FOVRadius, targetMask);
         //Checks if a collision was detected and was added to the collider array
         if(rangeCheck.Length != 0)
         {
@@ -57,37 +57,24 @@ public class EnemyFOV : MonoBehaviour
             //Gets the distance between the enemy and the detected collision
             Vector3 targetDirection = (target.position - transform.position).normalized;
             //Checks if the collision was detected within the valid FOV angle
-            if(Vector3.Angle(transform.forward, targetDirection) < fovAngle / 2)
+            if(Vector3.Angle(transform.forward, targetDirection) < FOVAngle / 2)
             {
                 //gets the distance between the enemy and the target
                 float targetDistance = Vector3.Distance(transform.position, target.position);
 
                 //Sends a raycast that checks if an obstruction is between the enemy and the target
-                if(!Physics.Raycast(transform.position, targetDirection, targetDistance, obstructionMask)
-                    
-                    )
+                if(!Physics.Raycast(transform.position, targetDirection, targetDistance, obstructionMask))
                 {
                     //If no obstruction in the way then the player has been spotted
-                    canSeePlayer = true;
                     AlertOthers();
-                }
-                else
-                {
-                    //If obstuction in the way then the player isn't spotted.
-                    canSeePlayer = false;
+                    player = target.gameObject;
+                    canSeePlayer = true;
+                    return;
                 }
             }
-            //If not in the valid FOV then the player is no longer spotted.
-            else
-            {
-                canSeePlayer = false;
-            }
         }
-        //Resets the player spotted variable if the player is out of range of detection.
-        else if(canSeePlayer == true)
-        {
-            canSeePlayer = false;
-        }
+
+        canSeePlayer = false;
     }
 
     private void AlertOthers()
@@ -109,5 +96,35 @@ public class EnemyFOV : MonoBehaviour
                 closeEnemies[i].GetComponent<EnemyFOV>().canSeePlayer = true;         
             }
         }
+    }
+
+    //editor visualizations
+    private void OnDrawGizmos()
+    {
+        if (!drawGizmos)
+            return;
+
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireSphere(transform.position, FOVRadius);
+
+        Vector3 angleDirection1 = DirectionFromAngle(transform.eulerAngles.y, FOVAngle / 2);
+        Vector3 angleDirection2 = DirectionFromAngle(transform.eulerAngles.y, -FOVAngle / 2);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawRay(transform.position, angleDirection1 * FOVRadius);
+        Gizmos.DrawRay(transform.position, angleDirection2 * FOVRadius);
+
+        if(canSeePlayer)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, player.transform.position);
+        }
+    }
+
+    private Vector3 DirectionFromAngle(float eulerY, float degreeAngle)
+    {
+        degreeAngle += eulerY;
+
+        return new Vector3(Mathf.Sin(degreeAngle * Mathf.Deg2Rad), 0, Mathf.Cos(degreeAngle * Mathf.Deg2Rad));
     }
 }
