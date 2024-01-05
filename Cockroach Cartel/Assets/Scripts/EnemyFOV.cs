@@ -63,7 +63,9 @@ public class EnemyFOV : MonoBehaviour
                 float targetDistance = Vector3.Distance(transform.position, target.position);
 
                 //Sends a raycast that checks if an obstruction is between the enemy and the target
-                if(!Physics.Raycast(transform.position, targetDirection, targetDistance, obstructionMask))
+                if(!Physics.Raycast(transform.position, targetDirection, targetDistance, obstructionMask)
+                    
+                    )
                 {
                     //If no obstruction in the way then the player has been spotted
                     canSeePlayer = true;
