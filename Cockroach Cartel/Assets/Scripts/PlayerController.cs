@@ -80,7 +80,7 @@ public class PlayerController : MonoBehaviour
             heading.y = 0;
         }
 
-        if(Input.GetAxis("Jump") > 0 && canJump && grounded) //this will currently use all jumps when held
+        if(Input.GetAxis("Jump") > 0 && canJump && grounded)
         {
             Jump();
             canJump = false;
@@ -93,15 +93,6 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //actual movement
-        /*if(Mathf.Abs(rb.velocity.x) < speedLimmit.x)
-        {
-            rb.AddForce(transform.right * heading.x * (run ? speed * RUN_MULTIPLIER : speed)); //should be setting velocity, not adding a force
-        }
-        if(Mathf.Abs(rb.velocity.z) < speedLimmit.y)
-        {
-            rb.AddForce(transform.forward * heading.y * (run ? speed * RUN_MULTIPLIER : speed)); //same here
-        }*/
         rb.velocity = new Vector3(0, rb.velocity.y, 0);
         rb.velocity += transform.right * heading.x * (run ? speed * RUN_MULTIPLIER : speed);
         rb.velocity += transform.forward * heading.y * (run ? speed * RUN_MULTIPLIER : speed);
