@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     //basic setup
     private const float RUN_MULTIPLIER = 3f; //this should be accessable in editor
     [SerializeField] private Transform cam;
+    [SerializeField] private bool lockCam = true;
     [Header("Movement")]
     [SerializeField] private bool run; //is hard set through code, no value in editor
     [SerializeField] private float speed = 7.5f;
@@ -15,8 +16,11 @@ public class PlayerController : MonoBehaviour
     [Header("Jump")]
     [SerializeField] private int jumps = 1;
     [SerializeField] private float jumpForce = 5;
+    [SerializeField] private Transform playerBase;
+    private float groundSphereRadius = 0.05f;
     private int jumpsUsed = 0;
-    private bool jump;
+    private bool canJump;
+    private bool grounded;
     private Vector2 heading;
     private Rigidbody rb;
 
@@ -30,6 +34,7 @@ public class PlayerController : MonoBehaviour
         }
 
         rb = GetComponent<Rigidbody>();
+        playerBase.position = new Vector3(playerBase.position.x, playerBase.position.y - groundSphereRadius, playerBase.position.z);
     }
 
     void Update()
@@ -47,7 +52,7 @@ public class PlayerController : MonoBehaviour
             run = false;
         }
 
-        //this can be simplified, getAxis is limited to -1,1, and for more instant reaction use GetAxisRaw
+        //this can be simplified, getAxis is limited to -1,1, and for more instant reaction use GetAxisRa
         if(Input.GetAxis("Horizontal") > 0)
         {
             heading.x = 1;
@@ -75,50 +80,61 @@ public class PlayerController : MonoBehaviour
             heading.y = 0;
         }
 
-        if(Input.GetAxis("Jump") > 0) //this will currently use all jumps when held
+        if(Input.GetAxis("Jump") > 0 && canJump && grounded) //this will currently use all jumps when held
         {
-            jump = true; //make a function for jump and just call it here, no need for the bools
+            Jump();
+            canJump = false;
         }
-        else
+        else if (Input.GetAxis("Jump") == 0)
         {
-            jump = false;
+            canJump = true;
         }
     }
 
     private void FixedUpdate()
     {
         //actual movement
-        if(Mathf.Abs(rb.velocity.x) < speedLimmit.x)
+        /*if(Mathf.Abs(rb.velocity.x) < speedLimmit.x)
         {
             rb.AddForce(transform.right * heading.x * (run ? speed * RUN_MULTIPLIER : speed)); //should be setting velocity, not adding a force
         }
         if(Mathf.Abs(rb.velocity.z) < speedLimmit.y)
         {
             rb.AddForce(transform.forward * heading.y * (run ? speed * RUN_MULTIPLIER : speed)); //same here
-        }
+        }*/
+        rb.velocity = new Vector3(0, rb.velocity.y, 0);
+        rb.velocity += transform.right * heading.x * (run ? speed * RUN_MULTIPLIER : speed);
+        rb.velocity += transform.forward * heading.y * (run ? speed * RUN_MULTIPLIER : speed);
 
-
-
-        if (jump && jumpsUsed < jumps)
+        if(lockCam)
         {
-            rb.AddForce(Vector3.up * jumpForce * 100);
-
-            jumpsUsed++;
+            //face away from cam
+            Vector3 facePos = new Vector3(cam.position.x, this.transform.position.y, cam.position.z);
+            this.transform.LookAt(facePos);
+            this.transform.Rotate(0, 180, 0);
+            //what if we want the player to be able to rotate the camera without the player moving?
         }
 
-        //face away from cam
-        Vector3 facePos = new Vector3(cam.position.x, this.transform.position.y, cam.position.z);
-        this.transform.LookAt(facePos);
-        this.transform.Rotate(0, 180, 0);
-        //what if we want the player to be able to rotate the camera without the player moving?
+        if(Physics.CheckSphere(playerBase.position, groundSphereRadius))
+        {
+            jumpsUsed = 0;
+            grounded = true;
+        }
+        else
+        {
+            grounded = false;
+        }
+    }
+    private void OnDrawGizmos()
+    {
+        if(true)
+            Gizmos.DrawWireSphere(playerBase.position, groundSphereRadius);
     }
 
-    private void OnCollisionEnter(Collision col)
+    private void Jump()
     {
-        if(col.gameObject.layer == 3) // 3:Ground
-        {
-            //reset jumps if touch the ground, think about how to make it work more accuratly
-            jumpsUsed = 0;
-        }
+        rb.AddForce(Vector3.up * jumpForce * 100);
+
+        jumpsUsed++;
     }
 }
