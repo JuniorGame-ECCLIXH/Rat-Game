@@ -23,6 +23,18 @@ public class PlayerStealth : MonoBehaviour
         }
     }
 
+    public void SetStealthed()
+    {
+        IsStealthed = true;
+        _playerMesh.material = _stealthMaterial;
+    }
+
+    public void UnsetStealthed()
+    {
+        IsStealthed = false;
+        _playerMesh.material = _playerMaterial;
+    }
+
     public void ToggleStealth()
     {
         IsStealthed = !IsStealthed;
