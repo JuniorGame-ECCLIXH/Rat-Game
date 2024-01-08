@@ -52,8 +52,10 @@ public class PlayerController : MonoBehaviour
             run = false;
         }
 
+        heading = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
         //this can be simplified, getAxis is limited to -1,1, and for more instant reaction use GetAxisRa
-        if(Input.GetAxis("Horizontal") > 0)
+/*        if(Input.GetAxis("Horizontal") > 0)
         {
             heading.x = 1;
         }
@@ -78,7 +80,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             heading.y = 0;
-        }
+        }*/
 
         if(Input.GetAxis("Jump") > 0 && canJump && grounded)
         {
@@ -93,18 +95,22 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.velocity = new Vector3(0, rb.velocity.y, 0);
-        rb.velocity += transform.right * heading.x * (run ? speed * RUN_MULTIPLIER : speed);
-        rb.velocity += transform.forward * heading.y * (run ? speed * RUN_MULTIPLIER : speed);
+        Vector3 moveSpeed = cam.right * heading.x * (run ? speed * RUN_MULTIPLIER : speed) + 
+            cam.forward * heading.y * (run ? speed * RUN_MULTIPLIER : speed);
 
-        if(lockCam)
+        rb.velocity = new Vector3(moveSpeed.x, rb.velocity.y, moveSpeed.z);
+
+        Vector3 facePosition = new Vector3(rb.velocity.x, 0, rb.velocity.z) + transform.position;
+        transform.LookAt(facePosition); //apply blending for smoother rotation
+
+/*        if(lockCam)
         {
             //face away from cam
             Vector3 facePos = new Vector3(cam.position.x, this.transform.position.y, cam.position.z);
             this.transform.LookAt(facePos);
             this.transform.Rotate(0, 180, 0);
             //what if we want the player to be able to rotate the camera without the player moving?
-        }
+        }*/
 
         if(Physics.CheckSphere(playerBase.position, groundSphereRadius))
         {
