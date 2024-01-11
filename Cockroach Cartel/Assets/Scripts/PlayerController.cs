@@ -16,6 +16,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int jumps = 1;
     private int jumpsUsed;
     [SerializeField] private float jumpForce = 5;
+    [Header("Dodge")]
+    [SerializeField] private float iFrameDelay = 0.2f;
+    [SerializeField] private float iFrameDura = 0.5f;
+    private float iFrameAmount;
+    [SerializeField] private float dodgeCooldown = 1f;
+    private float actCooldown;
+    private float dodgeSpeed = 5f;
+    [Header("HP")]
+    private float health;
+
     private bool jump;
     private Vector2 heading;
     private Rigidbody rb;
@@ -30,6 +40,7 @@ public class PlayerController : MonoBehaviour
         }
         rb = GetComponent<Rigidbody>();
         jumpsUsed = 0;
+        iFrameAmount = 0;
     }
 
     void Update()
@@ -37,7 +48,24 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        if(iFrameAmount > 0)
+        {
+            iFrameAmount -= Time.deltaTime;
+        }
+
         //user input
+        if(actCooldown <= 0) 
+        {
+            if (Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.LeftControl))
+            {
+                Dodge();
+            }
+        }
+        else
+        {
+            actCooldown -= Time.deltaTime;
+        }
+
         if (Input.GetKey(KeyCode.RightShift) || Input.GetKey(KeyCode.LeftShift))
         {
             run = true;
@@ -47,7 +75,7 @@ public class PlayerController : MonoBehaviour
             run = false;
         }
 
-        if(Input.GetAxis("Horizontal") > 0)
+        if (Input.GetAxis("Horizontal") > 0)
         {
             heading.x = 1;
         }
@@ -116,6 +144,40 @@ public class PlayerController : MonoBehaviour
         {
             //reset jumps if touch the ground, think about how to make it work more accuratly
             jumpsUsed = 0;
+        }
+    }
+
+    private void Dodge()
+    {
+        actCooldown = dodgeCooldown;
+        Debug.Log("Dodged");
+        rb.AddForce(transform.forward * dodgeSpeed, ForceMode.Force);
+        Invinsible(iFrameDelay, iFrameDura);
+    }
+
+    private void Invinsible(float delay, float iLength)
+    {
+        if(delay > 0) 
+        {
+            StartCoroutine(StartIFrames(delay, iLength));
+        }
+        else
+        {
+            iFrameAmount = iLength;
+        }
+    }
+
+    IEnumerator StartIFrames(float delay, float iLength)
+    {
+        yield return new WaitForSeconds(delay);
+        iFrameAmount = iLength;
+    }
+
+    private void Damage(float attackPower)
+    {
+        if(iFrameAmount <= 0)
+        {
+            health -= attackPower;
         }
     }
 }
