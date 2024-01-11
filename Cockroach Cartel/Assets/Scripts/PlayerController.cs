@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -20,6 +21,7 @@ public class PlayerController : MonoBehaviour
     private float groundSphereRadius = 0.05f;
     private int jumpsUsed = 0;
     private bool canJump;
+    private bool canMove = true;
     private bool grounded;
     private Vector2 heading;
     private Rigidbody rb;
@@ -67,7 +69,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (grounded)
+        if (grounded && canMove)
         {
             float moveSpeed = (run ? speed * RUN_MULTIPLIER : speed);
             Vector3 movement = cam.right * heading.x +
@@ -83,6 +85,7 @@ public class PlayerController : MonoBehaviour
                 transform.LookAt(facePosition); //apply blending for smoother rotation
             }
         }
+
 
 /*        if(lockCam)
         {
@@ -110,6 +113,17 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireSphere(playerBase.position, groundSphereRadius);
     }
 
+    public void DisablePlayerMovement()
+    {
+        rb.velocity = Vector3.zero;
+        rb.useGravity = false;
+        canMove = false;
+    }
+    public void EnablePlayerMovement()
+    {
+        rb.useGravity = true;
+        canMove = true;
+    }
     private void Jump()
     {
         rb.AddForce(Vector3.up * jumpForce * 100);
