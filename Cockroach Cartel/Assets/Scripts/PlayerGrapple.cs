@@ -22,6 +22,7 @@ public class PlayerGrapple : MonoBehaviour
 
     private void Update()
     {
+        //temp key input
         if(Input.GetKeyDown(KeyCode.G))
         {
             MoveGrapple();

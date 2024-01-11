@@ -6,7 +6,7 @@ public class LockOnTarget : MonoBehaviour
 {
     private Vector3 worldPos;
 
-    private void Start()
+    private void Awake()
     {
         worldPos = transform.position;
     }

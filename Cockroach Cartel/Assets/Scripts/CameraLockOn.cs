@@ -8,6 +8,6 @@ public class CameraLockOn : MonoBehaviour
 
     private void Start()
     {
-        transform.position = target.GetWorldPosition();
+        transform.localPosition = target.GetWorldPosition();
     }
 }
