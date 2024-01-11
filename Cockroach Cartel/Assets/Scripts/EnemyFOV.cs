@@ -13,11 +13,14 @@ public class EnemyFOV : MonoBehaviour
 
     [SerializeField] private LayerMask targetMask;
     [SerializeField] private LayerMask obstructionMask;
-    private bool canSeePlayer;
+    private bool combatStart = false;
+    private bool canSeePlayer = false;
 
     [Header("Alerted")]
     [SerializeField] private float alertRadius;
     [SerializeField] private LayerMask enemyMask;
+    [SerializeField] private float spottedCountdown = 0f;
+    [SerializeField] private float maxSpot = 60f;
 
     [Header("Editor Visuals")]
     [SerializeField] private bool drawGizmos = true;
@@ -26,6 +29,23 @@ public class EnemyFOV : MonoBehaviour
     {
         //Initializes the detection coroutine
         StartCoroutine(FOVRoutine());
+    }
+
+    void Update()
+    {
+        if(spottedCountdown > 0f && canSeePlayer)
+        {
+            spottedCountdown -= Time.deltaTime;
+        }
+        else if(spottedCountdown <= 0 && canSeePlayer)
+        {
+            combatStart = true;
+            AlertOthers();
+        }
+        else
+        {
+            spottedCountdown = 0f;
+        }
     }
 
     public bool CanSeePlayer() => canSeePlayer;
@@ -66,7 +86,6 @@ public class EnemyFOV : MonoBehaviour
                 if(!Physics.Raycast(transform.position, targetDirection, targetDistance, obstructionMask))
                 {
                     //If no obstruction in the way then the player has been spotted
-                    AlertOthers();
                     player = target.gameObject;
                     canSeePlayer = true;
                     return;
@@ -93,7 +112,7 @@ public class EnemyFOV : MonoBehaviour
         {
             if (closeEnemies[i].GetComponent("EnemyFOV") != null)
             {
-                closeEnemies[i].GetComponent<EnemyFOV>().canSeePlayer = true;         
+                closeEnemies[i].GetComponent<EnemyFOV>().combatStart = true;         
             }
         }
     }
