@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
         }
 
         rb = GetComponent<Rigidbody>();
-        playerBase.position = new Vector3(playerBase.position.x, playerBase.position.y - groundSphereRadius, playerBase.position.z);
+        //playerBase.position = new Vector3(playerBase.position.x, playerBase.position.y - groundSphereRadius, playerBase.position.z);
     }
 
     void Update()
@@ -54,34 +54,6 @@ public class PlayerController : MonoBehaviour
 
         heading = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-        //this can be simplified, getAxis is limited to -1,1, and for more instant reaction use GetAxisRa
-/*        if(Input.GetAxis("Horizontal") > 0)
-        {
-            heading.x = 1;
-        }
-        else if(Input.GetAxis("Horizontal") < 0)
-        {
-            heading.x = -1;
-        }
-        else
-        {
-            heading.x = 0;
-        }
-
-        //this can be combined with the x axis
-        if (Input.GetAxis("Vertical") > 0)
-        {
-            heading.y = 1;
-        }
-        else if (Input.GetAxis("Vertical") < 0)
-        {
-            heading.y = -1;
-        }
-        else
-        {
-            heading.y = 0;
-        }*/
-
         if(Input.GetAxis("Jump") > 0 && canJump && grounded)
         {
             Jump();
@@ -95,13 +67,22 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 moveSpeed = cam.right * heading.x * (run ? speed * RUN_MULTIPLIER : speed) + 
-            cam.forward * heading.y * (run ? speed * RUN_MULTIPLIER : speed);
+        if (grounded)
+        {
+            float moveSpeed = (run ? speed * RUN_MULTIPLIER : speed);
+            Vector3 movement = cam.right * heading.x +
+            cam.forward * heading.y;
 
-        rb.velocity = new Vector3(moveSpeed.x, rb.velocity.y, moveSpeed.z);
+            movement = movement.normalized * moveSpeed;
 
-        Vector3 facePosition = new Vector3(rb.velocity.x, 0, rb.velocity.z) + transform.position;
-        transform.LookAt(facePosition); //apply blending for smoother rotation
+            rb.velocity = new Vector3(movement.x, rb.velocity.y, movement.z);
+
+            if (rb.velocity.magnitude > 0)
+            {
+                Vector3 facePosition = new Vector3(rb.velocity.x, 0, rb.velocity.z) + transform.position;
+                transform.LookAt(facePosition); //apply blending for smoother rotation
+            }
+        }
 
 /*        if(lockCam)
         {
@@ -112,7 +93,7 @@ public class PlayerController : MonoBehaviour
             //what if we want the player to be able to rotate the camera without the player moving?
         }*/
 
-        if(Physics.CheckSphere(playerBase.position, groundSphereRadius))
+        if (Physics.CheckSphere(playerBase.position, groundSphereRadius))
         {
             jumpsUsed = 0;
             grounded = true;
@@ -124,8 +105,9 @@ public class PlayerController : MonoBehaviour
     }
     private void OnDrawGizmos()
     {
-        if(true)
-            Gizmos.DrawWireSphere(playerBase.position, groundSphereRadius);
+        Gizmos.color = grounded ? Color.green : Color.red;
+
+        Gizmos.DrawWireSphere(playerBase.position, groundSphereRadius);
     }
 
     private void Jump()
