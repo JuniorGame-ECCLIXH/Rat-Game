@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerGrapple : MonoBehaviour
 {
     [SerializeField] private float grappleSpeed;
+    [SerializeField] private float playerHeight = 2;
     /*temp serialize*/
     [SerializeField] private GrapplePoint grappleTarget;
     [SerializeField] private PlayerController controller;
@@ -33,7 +34,8 @@ public class PlayerGrapple : MonoBehaviour
         {
             JumpToPoint();
 
-            if(Vector3.Distance(transform.position, targetPos) < 0.5f)
+            if(Vector3.Distance(new Vector3(transform.position.x, transform.position.y - playerHeight/2, 
+                transform.position.z), targetPos) < 0.5f)
             {
                 isGrappling = false;
                 controller.EnablePlayerMovement();
@@ -46,7 +48,7 @@ public class PlayerGrapple : MonoBehaviour
     private void JumpToPoint()
     {
         float desiredY = Mathf.Abs(targetPos.z - transform.position.z);
-        Vector3 desiredPos = new Vector3(targetPos.x, targetPos.y + desiredY, targetPos.z);
+        Vector3 desiredPos = new Vector3(targetPos.x, targetPos.y + desiredY + playerHeight/2, targetPos.z);
         transform.position = Vector3.MoveTowards(transform.position, desiredPos, grappleSpeed * Time.deltaTime);
     }
 
