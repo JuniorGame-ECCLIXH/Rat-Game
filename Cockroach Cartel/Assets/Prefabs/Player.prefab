@@ -265,6 +265,7 @@ GameObject:
   - component: {fileID: 1169972364956046406}
   - component: {fileID: 3031251183664867982}
   - component: {fileID: 2217184388313063910}
+  - component: {fileID: 7367169334222639255}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -367,3 +368,22 @@ MonoBehaviour:
   grappleSpeed: 10
   playerHeight: 2
   controller: {fileID: 0}
+--- !u!114 &7367169334222639255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6940390459807715325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b156b401788f3c4d9f5552f8d69e9f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 0}
+  cameraTarget: {fileID: 0}
+  cameraAnimator: {fileID: 0}
+  lockOnRange: 10
+  lockOnLayer:
+    serializedVersion: 2
+    m_Bits: 64
