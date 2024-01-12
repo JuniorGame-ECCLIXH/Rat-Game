@@ -364,7 +364,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5863e3e1b7cc0f944ad56893e495d53f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grappleSpeed: 5
+  grappleSpeed: 10
   playerHeight: 2
-  grappleTarget: {fileID: 0}
   controller: {fileID: 0}

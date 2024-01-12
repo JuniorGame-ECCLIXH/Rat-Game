@@ -6,9 +6,8 @@ public class PlayerGrapple : MonoBehaviour
 {
     [SerializeField] private float grappleSpeed;
     [SerializeField] private float playerHeight = 2;
-    /*temp serialize*/
-    [SerializeField] private GrapplePoint grappleTarget;
     [SerializeField] private PlayerController controller;
+    private GrapplePoint grappleTarget;
     private Vector3 targetPos;
     private bool isGrappling = false;
 
@@ -25,7 +24,8 @@ public class PlayerGrapple : MonoBehaviour
         //temp key input
         if(Input.GetKeyDown(KeyCode.G))
         {
-            MoveGrapple();
+            Grapple();
+            GetComponent<PlayerLockOn>().SetFollowCamera();
         }
     }
 
@@ -45,6 +45,7 @@ public class PlayerGrapple : MonoBehaviour
     }
 
     public bool IsGrappling() => isGrappling;
+    public void SetGrapplePoint(GrapplePoint grapplePoint) => grappleTarget = grapplePoint;
 
     private void JumpToPoint()
     {
@@ -53,10 +54,13 @@ public class PlayerGrapple : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, desiredPos, grappleSpeed * Time.deltaTime);
     }
 
-    private void MoveGrapple()
+    private void Grapple()
     {
-        targetPos = grappleTarget.GetEndPoint();
-        isGrappling = true;
-        controller.DisablePlayerMovement();
+        if(grappleTarget)
+        {
+            targetPos = grappleTarget.GetEndPoint();
+            isGrappling = true;
+            controller.DisablePlayerMovement();
+        }
     }
 }

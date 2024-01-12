@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class CameraLockOn : MonoBehaviour
 {
-    [SerializeField] private LockOnTarget target;
-
-    private void Start()
+    public void SetLockOnTarget(LockOnTarget target)
     {
         transform.localPosition = target.GetWorldPosition();
     }
