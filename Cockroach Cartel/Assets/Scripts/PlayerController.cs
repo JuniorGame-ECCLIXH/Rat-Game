@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int jumps = 1;
     [SerializeField] private float jumpForce = 5;
     [SerializeField] private Transform playerBase;
+    [SerializeField] private LayerMask playerLayer;
     private float groundSphereRadius = 0.05f;
     private int jumpsUsed = 0;
     private bool canJump;
@@ -36,7 +37,6 @@ public class PlayerController : MonoBehaviour
         }
 
         rb = GetComponent<Rigidbody>();
-        //playerBase.position = new Vector3(playerBase.position.x, playerBase.position.y - groundSphereRadius, playerBase.position.z);
     }
 
     void Update()
@@ -86,17 +86,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-
-/*        if(lockCam)
-        {
-            //face away from cam
-            Vector3 facePos = new Vector3(cam.position.x, this.transform.position.y, cam.position.z);
-            this.transform.LookAt(facePos);
-            this.transform.Rotate(0, 180, 0);
-            //what if we want the player to be able to rotate the camera without the player moving?
-        }*/
-
-        if (Physics.CheckSphere(playerBase.position, groundSphereRadius))
+        if (Physics.CheckSphere(playerBase.position, groundSphereRadius, ~playerLayer))
         {
             jumpsUsed = 0;
             grounded = true;
@@ -127,7 +117,6 @@ public class PlayerController : MonoBehaviour
     private void Jump()
     {
         rb.AddForce(Vector3.up * jumpForce * 100);
-
         jumpsUsed++;
     }
 }

@@ -46,6 +46,7 @@ public class PlayerGrapple : MonoBehaviour
 
     public bool IsGrappling() => isGrappling;
     public void SetGrapplePoint(GrapplePoint grapplePoint) => grappleTarget = grapplePoint;
+    public GrapplePoint GetGrapplePoint() => grappleTarget;
 
     private void JumpToPoint()
     {
